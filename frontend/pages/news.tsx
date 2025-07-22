@@ -1,18 +1,26 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import axios from "axios";
+import { useNews } from "../hooks/useNews";
 
-const BACKEND_URL =
-  process.env.BACKEND_NEWS_API || "http://localhost:4000/news";
+export default function NewsPage() {
+  const { articles, loading, error, fetchNews } = useNews();
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  try {
-    const response = await axios.get(BACKEND_URL);
-    res.status(200).json(response.data);
-  } catch (error) {
-    console.error("Failed to fetch", error);
-    res.status(500).json({ error: "Failed to fetch news" });
-  }
+  return (
+    <div>
+      <h1>News</h1>
+      <button onClick={fetchNews} disabled={loading}>
+        Fetch
+      </button>
+      {loading && <p>Loading...</p>}
+      {error && <p>Error...</p>}
+      <ul>
+        {articles.map((article, index) => (
+          <li key={index}>
+            <a href={article.url} target="_blank" rel="noopener noreferrer">
+              <strong>{article.title}</strong>
+              <p>{article.publishedAt.toString()}</p>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 }

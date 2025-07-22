@@ -16,7 +16,13 @@ export function useNews() {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await axios.get("/api/news");
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_NEWS_API;
+      if (!backendUrl) {
+        console.error(
+          "NEXT_PUBLIC_BACKEND_NEWS_API environment variable is not defined"
+        );
+      }
+      const { data } = await axios.get(backendUrl!.toString());
       setArticles(data.articles || []);
     } catch (error: any) {
       setError(
